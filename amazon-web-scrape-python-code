@@ -1,0 +1,62 @@
+# The Python code below was ran on Jupyter Notebook
+
+def check_price():
+    
+    import requests
+    from bs4 import BeautifulSoup
+    
+    url = "https://www.amazon.com/Funny-Data-Systems-Business-Analyst/dp/B07FNW9FGJ/ref=sr_1_2?crid=5HJWF7LBIQNF&keywords=funny%2Bgot%2Bdata%2Bmis%2Bdata%2Bsystems%2Bbusiness%2Banalyst%2Bt-shirt&qid=1683181686&sprefix=funny%2Bgot%2Bdata%2Bmis%2Bdata%2Caps%2C306&sr=8-2&customId=B0752XJYNL&customizationToken=MC_Assembly_1%23B0752XJYNL&th=1"
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+    "cookie": "your_cookie_value_here"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        product_title = soup.find(id='productTitle').get_text().strip()
+#         if product_title:
+#             print(product_title)
+#         else:
+#             print("Product title not found.")
+    else:
+        print(f"Failed to retrieve page. Status code: {response.status_code}")
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        price = (soup.select('span.a-price-whole')[0].get_text() + soup.select('span.a-price-fraction')[0].get_text())
+#         if price:
+#             print(price.strip())
+#         else:
+#             print("Price not found.")
+    else:
+        print(f"Failed to retrieve page. Status code: {response.status_code}")
+
+    # date and time I scrape the data
+    import datetime
+    today = datetime.date.today()
+#     print(today)
+
+    # creates CSV file to contain the data
+    import csv
+    header = ['Product Title', 'Price']
+    data = [product_title, price, today] 
+
+    # append data to the existing csv file created
+    with open('AmazonScrapeDataset.csv', 'a+', newline='', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
+ 
+ # while loop to run the code every 5 seconds
+ 
+ while True: 
+    check_price()
+    time.sleep(5)
+
+# to view the data in jupyter notebook
+
+import pandas as pd
+
+df = pd.read_csv(r'C:\Users\shirl\AmazonScrapeDataset.csv')
+print(df)
